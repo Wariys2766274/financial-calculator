@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Финансовый калькулятор</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .card.results {
+            border-left-color: #2ecc71;
+            background: #eafaf1;
+        }
+
+        .card.forecast {
+            border-left-color: #f39c12;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .result-item span.value {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .result-item.highlight {
+            font-size: 1.1rem;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #ccc;
+        }
+
+        .result-item.highlight span.value {
+            color: #27ae60;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Умный Финансовый Калькулятор</h1>
+    <p class="subtitle">Управление доходами, расходами и подушкой безопасности</p>
+
+    <div class="grid">
+        <!-- Ввод данных: Доходы и Расходы -->
+        <div class="card">
+            <h2>Доходы и Расходы</h2>
+            <div class="form-group">
+                <label for="income">Ежемесячный доход (руб.):</label>
+                <input type="number" id="income" value="60000" oninput="calculate()">
+            </div>
+            <div class="form-group">
+                <label for="mandatoryExpenses">Обязательные расходы (руб.):</label>
+                <input type="number" id="mandatoryExpenses" value="30000" oninput="calculate()">
+            </div>
+            <div class="form-group">
+                <label for="personalExpenses">Личные расходы (руб.):</label>
+                <input type="number" id="personalExpenses" value="15000" oninput="calculate()">
+            </div>
+        </div>
+
+        <!-- Подушка Безопасности -->
+        <div class="card">
+            <h2>Подушка Безопасности</h2>
+            <div class="form-group">
+                <label for="safetyMonths">Цель подушки (в месяцах расходов):</label>
+                <select id="safetyMonths" onchange="calculate()">
+                    <option value="3">3 месяца</option>
+                    <option value="6" selected>6 месяцев</option>
+                    <option value="12">12 месяцев</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="currentSafety">Уже накоплено на подушку (руб.):</label>
+                <input type="number" id="currentSafety" value="50000" oninput="calculate()">
+            </div>
+        </div>
+
+        <!-- Инвестиции / Вклад -->
+        <div class="card">
+            <h2>Параметры Инвестиций / Вклада</h2>
+            <div class="form-group">
+                <label for="interestRate">Процентная ставка (% годовых):</label>
+                <input type="number" id="interestRate" value="12" step="0.5" oninput="calculate()">
+            </div>
+            <div class="form-group">
+                <label for="years">Срок (лет):</label>
+                <input type="number" id="years" value="5" min="1" max="30" oninput="calculate()">
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <!-- Итоги Бюджета -->
+        <div class="card results">
+            <h2>Итоги Бюджета</h2>
+            <div class="result-item">
+                <span>Общий доход:</span>
+                <span class="value" id="resIncome">0 руб.</span>
+            </div>
+            <div class="result-item">
+                <span>Общие расходы:</span>
+                <span class="value" id="resExpenses">0 руб.</span>
+            </div>
+            <div class="result-item highlight">
+                <span>Свободный остаток:</span>
+                <span class="value" id="resFree">0 руб.</span>
+            </div>
+            <div class="result-item" style="margin-top: 15px;">
+                <span>Целевой размер подушки:</span>
+                <span class="value" id="resSafetyTarget">0 руб.</span>
+            </div>
+        </div>
+
+        <!-- Распределение и Прогноз -->
+        <div class="card forecast">
+            <h2>Распределение и Прогноз</h2>
+            <div class="result-item">
+                <span>На подушку безопасности:</span>
+                <span class="value" id="resToSafety">0 руб.</span>
+            </div>
+            <div class="result-item">
+                <span>На инвестиции/вклад:</span>
+                <span class="value" id="resToInvest">0 руб.</span>
+            </div>
+            <div class="result-item highlight">
+                <span>Прогноз через <span id="resYearsText">5</span> лет:</span>
+                <span class="value" id="resTotalForecast">0 руб.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Таблица прогноза -->
+    <div class="card" style="border-left-color: #8e44ad;">
+        <h2>Помесячный и годовой график роста накоплений</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Период</th>
+                    <th>Сумма накоплений</th>
+                </tr>
+            </thead>
+            <tbody id="forecastTable">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function formatMoney(num) {
+        return Math.round(num).toLocaleString('ru-RU') + ' руб.';
+    }
+
+    function calculate() {
+        const income = parseFloat(document.getElementById('income').value) || 0;
+        const mandatoryExpenses = parseFloat(document.getElementById('mandatoryExpenses').value) || 0;
+        const personalExpenses = parseFloat(document.getElementById('personalExpenses').value) || 0;
+        const safetyMonths = parseInt(document.getElementById('safetyMonths').value) || 6;
+        const currentSafety = parseFloat(document.getElementById('currentSafety').value) || 0;
+        const interestRate = parseFloat(document.getElementById('interestRate').value) || 0;
+        const years = parseInt(document.getElementById('years').value) || 5;
+
+        const totalExpenses = mandatoryExpenses + personalExpenses;
+        const freeMoney = income - totalExpenses;
+
+        const targetSafety = totalExpenses * safetyMonths;
+        const safetyDeficit = Math.max(0, targetSafety - currentSafety);
+
+        let toSafety = 0;
+        let toInvest = 0;
+
+        if (freeMoney > 0) {
+            if (safetyDeficit > 0) {
+                toSafety = Math.min(freeMoney, safetyDeficit);
+                toInvest = freeMoney - toSafety;
+            } else {
+                toInvest = freeMoney;
+            }
+        }
+
+        document.getElementById('resIncome').innerText = formatMoney(income);
+        document.getElementById('resExpenses').innerText = formatMoney(totalExpenses);
+        document.getElementById('resFree').innerText = formatMoney(freeMoney);
+        document.getElementById('resSafetyTarget').innerText = formatMoney(targetSafety);
+        document.getElementById('resToSafety').innerText = formatMoney(toSafety);
+        document.getElementById('resToInvest').innerText = formatMoney(toInvest);
+        document.getElementById('resYearsText').innerText = years;
+
+        // Расчет сложного процента с ежемесячным пополнением
+        const monthlyRate = interestRate / 100 / 12;
+        let totalInvested = 0;
+        const forecastTable = document.getElementById('forecastTable');
+        forecastTable.innerHTML = '';
+
+        for (let y = 1; y <= years; y++) {
+            for (let m = 1; m <= 12; m++) {
+                totalInvested = (totalInvested + toInvest) * (1 + monthlyRate);
+            }
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${y} год</td><td>${formatMoney(totalInvested)}</td>`;
+            forecastTable.appendChild(row);
+        }
+
+        document.getElementById('resTotalForecast').innerText = formatMoney(totalInvested);
+    }
+
+    // Первоначальный расчет при загрузке страницы
+    calculate();
+</script>
+
+</body>
+</html>
